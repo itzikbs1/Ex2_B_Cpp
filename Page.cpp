@@ -3,31 +3,32 @@
 #include <stdlib.h>
 #include <string>
 #include "Direction.hpp"
-#include "Notebook.cpp"
+// #include "Notebook.cpp"
 #include <bits/stdc++.h>
-
+#include "Page.hpp"
 #include<unistd.h>
 
 using namespace std;
-namespace ariel{
+using namespace ariel;
 
-const int max_size_of_col = 100;
-int biggest_row = 0;
+
+// const int max_size_of_col = 100;
+// int biggest_row = 0;
     // class Page{
     // public:
     //             horizonal/vertical      vertical/horizonal
     //unordered_map<row/col, unordered_map<col/row, string>> page;
-    unordered_map<int, unordered_map<int, string>> page;
+    // unordered_map<int, unordered_map<int, string>> page;
     
     //fill the specific row in _______...
-    void fill_row(int row){
+    void Page::fill_row(int row){
         for (int i = 0; i < max_size_of_col; i++)
         {
             page[row][i] = "_";
         }
     }
     //this function check if in this row not write yet, return true or false
-    bool check_valid_horizontal(int row, int col, int len){
+    bool Page::check_valid_horizontal(int row, int col, int len){
 
         for (int i = 0; i < len; i++)
         {
@@ -39,7 +40,7 @@ int biggest_row = 0;
     }
     //this function check if in this col not write yet,
     //if the row dosent exsist ("") then create new one,  return true or false
-    bool check_valid_vertical(int row, int col, int len){
+    bool Page::check_valid_vertical(int row, int col, int len){
         for (int i = 0; i < len; i++)
         {
             if(row+i>biggest_row){
@@ -61,7 +62,7 @@ int biggest_row = 0;
         return true;
     }
     //this function write in row that she get and fill the col wr with size len(wr), Direction:Horizontal
-    void write_horizontal(int row, int column, string wr){
+    void Page::write_horizontal(int row, int column, string wr){
         
     if(check_valid_horizontal(row, column, wr.length())){
         for(int i=0; i<wr.length(); i++){
@@ -74,7 +75,7 @@ int biggest_row = 0;
     }
 
     //this function write in col that she get and fill the col wr with size len(wr), Direction:Vertical
-    void write_vertical(int row, int column, string wr){
+    void Page::write_vertical(int row, int column, string wr){
             
         if(check_valid_vertical(row, column, wr.length())){
             for(int i=0; i<wr.length(); i++){
@@ -90,7 +91,7 @@ int biggest_row = 0;
         }
 
     //this function write to the page and check if its valid text
-    void write(int row, int column, Direction dir, string wr){
+    void Page::write(int row, int column, Direction dir, string wr){
 
         if(row>biggest_row){
             biggest_row = row;
@@ -115,7 +116,7 @@ int biggest_row = 0;
         }
     }
     //this function read from specific row len characters to string and return the string 
-    string read_horizontal(int row, int col, int len){
+    string Page::read_horizontal(int row, int col, int len){
         string text = "";
         for (int i = 0; i < len; i++)
         {
@@ -125,7 +126,7 @@ int biggest_row = 0;
     }
 
     //this function read from specific col len characters to string and return the string
-    string read_vertical(int row, int col, int len){
+    string Page::read_vertical(int row, int col, int len){
         string text = "";
         for (int i = 0; i < len; i++)
         {
@@ -134,7 +135,7 @@ int biggest_row = 0;
         return text;
     }
     //this function read from the page
-    string read(int row, int column, Direction dir, int num_of_chars){
+    string Page::read(int row, int column, Direction dir, int num_of_chars){
 
         if(row>biggest_row){
             biggest_row = row;
@@ -150,20 +151,20 @@ int biggest_row = 0;
         return text;
     }
     //this function erase spesific row in ~
-    void erase_horizontal(int row, int col, int len){
+    void Page::erase_horizontal(int row, int col, int len){
         for(int i=0; i<len; i++){
             page[row][col+i] = "~";
         }
     }
     //this function erase spesific col in ~
-    void erase_vertical(int row, int col, int len){
+    void Page::erase_vertical(int row, int col, int len){
         for(int i=0; i<len; i++){
             page[row+i][col] = "~";
         }
     }
 
     //this function erase place in the page with ~
-    void erase(int row, int column, Direction dir, int num_of_chars){
+    void Page::erase(int row, int column, Direction dir, int num_of_chars){
 
         if(row>biggest_row){
             biggest_row = row;
@@ -177,7 +178,7 @@ int biggest_row = 0;
         }
     }
     //this function return string that Represents the page
-    string print_page(){//for me
+    string Page::print_page(){//for me
         string s = "";
         // cout<<"153"<<endl;
         for(int j=0; j<=biggest_row; j++){
@@ -193,30 +194,32 @@ int biggest_row = 0;
         return s;
     }
 
-}
-
-int main(){
+// int main(){
 
     // Page p = new Page();
-    ariel::write(0,0,ariel::Direction::Horizontal, "");
+    // cout<<"221"<<endl;
+    // ariel::Page p = new ariel::Page();
+    // Page p;
+    // p.write(0,0,ariel::Direction::Horizontal, "");
+    // write(0,0,ariel::Direction::Horizontal, "");
     // string s = ariel::write(0,0,ariel::Direction::Horizontal, "");
     // s += "pin";
-    cout<<"the string is: "<<ariel::print_page()<<endl;
-    ariel::write(0,5, ariel::Direction::Horizontal, "itzik_");
-    ariel::write(1,6, ariel::Direction::Vertical, "itzik");
-    cout<<ariel::print_page()<<endl;
-    usleep(10000);
-    ariel::write(0,10, ariel::Direction::Horizontal, " ben shushan");
-    cout<<ariel::print_page()<<endl;
+    // cout<<"the string is: "<<p.print_page()<<endl;
+    // p.write(0,5, ariel::Direction::Horizontal, "itzik_");
+    // p.write(1,6, ariel::Direction::Vertical, "itzik");
+    // cout<<ariel::print_page()<<endl;
+    // usleep(10000);
+    // ariel::write(0,10, ariel::Direction::Horizontal, " ben shushan");
+    // cout<<ariel::print_page()<<endl;
     // cout<<ariel::page[0][5]<<endl;
     // cout<<ariel::page[1][1]<<endl;
-    ariel::erase(1, 5, ariel::Direction::Horizontal, 100);
+    // ariel::erase(1, 5, ariel::Direction::Horizontal, 100);
     // cout<<"after erase"<<ariel::page[0][1]<<endl;
     // cout<<"after erase"<<ariel::page[0][2]<<endl;
     // cout<<"after erase"<<ariel::page[0][3]<<endl;
     // cout<<"after erase"<<ariel::page[0][4]<<endl;
-    string s = ariel::print_page();
-    cout<<s<<endl;
+    // string s = p.print_page();
+    // cout<<s<<endl;
     // cout<<ariel::print_row(1)<<endl;
-    return 0;
-}
+//     return 0;
+// }
