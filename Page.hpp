@@ -20,8 +20,8 @@ class Page{
     public:
     void fill_row(int row);
     void fill_page(int big_row, int max);
-    string fill_vert(int len);
-    bool check_valid(string str);
+    static string fill_vert(int len);
+    static bool check_valid(string str);
     bool check_valid_horizontal(int row, int col, int len);
     bool check_valid_vertical(int row, int col, int len);
     void write_horizontal(int row, int column, string wr);
