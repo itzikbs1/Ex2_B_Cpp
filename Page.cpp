@@ -8,6 +8,8 @@
 #include "Page.hpp"
 #include<unistd.h>
 
+
+// #include "doctest.h"
 using namespace std;
 using namespace ariel;
 
@@ -21,17 +23,64 @@ using namespace ariel;
     // unordered_map<int, unordered_map<int, string>> page;
     
     //fill the specific row in _______...
+
+    bool Page::check_valid(string str){
+        for (unsigned long i = 0; i < str.length(); i++)
+        {
+            if(str[i] < 32 || str[i] > 126){
+                return false;
+            }
+        }
+        return true;
+    }
+
     void Page::fill_row(int row){
         for (int i = 0; i < max_size_of_col; i++)
         {
-            page[row][i] = "_";
+            page[row][i] = '_';
         }
+    }
+    void Page::fill_page(int big_row, int max){
+        for(int j=big_row; j<max; j++){
+        for (int i = 0; i < max_size_of_col; i++)
+        {
+            page[j][i] = "_";
+        }
+        }
+    }
+    int max(int len1, int len2){
+        int max;
+        if(len1>len2){
+            max=len1;
+        }else{
+            max=len2;
+        }
+        return max;
+    }
+    string Page::fill_vert(int len){
+        string s;
+        for (int i = 0; i < len; i++)
+        {
+            s += "_";
+        }
+        return s;
     }
     //this function check if in this row not write yet, return true or false
     bool Page::check_valid_horizontal(int row, int col, int len){
 
         for (int i = 0; i < len; i++)
         {
+            if(row>biggest_row){
+                biggest_row = row;
+                // cout<<"100"<<endl;
+                // fill_row(row);
+        }
+        
+            if(page[row][col].empty()){
+                // cout<<"105"<<endl;
+                fill_row(row);
+            }
+
             if(page[row][col+i] != "_"){
                 return false;
             }
@@ -44,18 +93,21 @@ using namespace ariel;
         for (int i = 0; i < len; i++)
         {
             if(row+i>biggest_row){
+                // cout<<"83"<<endl;
                 // cout<<"big+row:"<<biggest_row<<endl;
                 // cout<<"row+i:"<<row+i<<endl;
                 biggest_row = row+i;
             }
             // cout<<"page: "<<page[row+i][col]<<endl;
-            if(page[row+i][col] == ""){
+            if(page[row+i][col].empty()){
                 // cout<<"41"<<endl;
+                //  cout<<"91"<<endl;
                 fill_row(row+i);
             }
 
             if(page[row+i][col] != "_"){
                 // cout<<"46"<<endl;
+                //  cout<<"97"<<endl;
                 return false;
             }
         }
@@ -65,8 +117,9 @@ using namespace ariel;
     void Page::write_horizontal(int row, int column, string wr){
         
     if(check_valid_horizontal(row, column, wr.length())){
-        for(int i=0; i<wr.length(); i++){
-            page[row][column + i] = wr[i];
+        for(unsigned long i=0; i<wr.length(); i++){
+            // cout<<"w[i]"<<w[i]<<endl;
+            page[row][(unsigned long)column + i] = wr[i];
         }
     }else{//already write/erase in this place
         throw runtime_error(std::string("Failed can`t type here again!"));//need to check if this throw okay
@@ -78,8 +131,12 @@ using namespace ariel;
     void Page::write_vertical(int row, int column, string wr){
             
         if(check_valid_vertical(row, column, wr.length())){
-            for(int i=0; i<wr.length(); i++){
-                page[row+i][column] = wr[i];
+            // cout<<"wr.size"<<wr.length()<<endl;
+            // cout<<"row "<<row<<endl;
+            // cout<<"col "<<column<<endl;
+            for(unsigned long i=0; i<wr.length(); i++){
+                // page[row+i][column].insert(1,wr);
+                page[(unsigned long)row+i][column] = wr[i];
             }
         }else{//already write/erase in this place
             // cout<<"71"<<endl;
@@ -89,26 +146,44 @@ using namespace ariel;
             // throw("can`t type in this place again");
         }
         }
+    bool contain_in_text(string str){
+        for (unsigned long i = 0; i < str.length(); i++)
+        {
+            char c = str.at(i);
+            if(c == '~'){
+                return false;
+            }
+        }
+        return true;
+    }
 
     //this function write to the page and check if its valid text
-    void Page::write(int row, int column, Direction dir, string wr){
+    void Page::write(int row, int column, Direction dir, string const &wr){
 
-        if(row>biggest_row){
-            biggest_row = row;
+        if(!check_valid(wr)){
+            throw runtime_error(std::string("Failed can`t type here again!"));
         }
-        
-        if(page[row][column] == ""){
-            fill_row(row);
+
+        if(!contain_in_text(wr)){
+            throw runtime_error(std::string("Failed can`t write ~ in the page!"));//need to check if this throw okay
         }
 
         if(dir == Direction::Horizontal){//Horizontal
-                if(wr.length() + column > max_size_of_col){
+                // cout<<"wr:"<<wr.size()<<endl;
+                // cout<<"col:"<<column<<endl;
+                // cout<<"max:"<<max_size_of_col<<endl;
+                if((int)wr.length() + column >= max_size_of_col){
                     throw runtime_error(std::string("Failed: not valid, the str is too big"));//need to check if this throw okay
                     // throw("not valid, the str is too big");
                 }
                 write_horizontal(row, column, wr);
 
         }else if(dir == Direction::Vertical){
+
+            // int temp = max(row, column);
+            // int m = max(temp, wr.length());
+
+            // fill_page(biggest_row ,m);
             // if(wr.length() > max_size_of_col){
             //         throw("not valid, the str is too big");
             //     }
@@ -117,7 +192,7 @@ using namespace ariel;
     }
     //this function read from specific row len characters to string and return the string 
     string Page::read_horizontal(int row, int col, int len){
-        string text = "";
+        string text;
         for (int i = 0; i < len; i++)
         {
             text += page[row][col+i];
@@ -127,26 +202,56 @@ using namespace ariel;
 
     //this function read from specific col len characters to string and return the string
     string Page::read_vertical(int row, int col, int len){
-        string text = "";
+        string text;
+
+        // if(row < biggest_row){
+        //     for (int i = 0; i < len; i++)
+        //     {
+        //         text += "_";
+        //     }
+            
+        // }else{
         for (int i = 0; i < len; i++)
         {
             text += page[row+i][col];
         }
+        // }
         return text;
     }
     //this function read from the page
     string Page::read(int row, int column, Direction dir, int num_of_chars){
 
-        if(row>biggest_row){
+
+        string text;
+        if(dir == Direction::Horizontal){
+
+            if(row>biggest_row){
             biggest_row = row;
+            // fill_row(row);
+            }
+            if(page[row][column].empty()){
+            // cout<<"105"<<endl;
+            fill_row(row);
+            }
+
+            if(num_of_chars + column > max_size_of_col){
+                    throw runtime_error(std::string("Failed: not valid, the str is too big"));//need to check if this throw okay
+                    // throw("not valid, the str is too big");
         }
 
-        string text = "";
-        if(dir == Direction::Horizontal){
             text = read_horizontal(row, column, num_of_chars);
         
         }else if(dir == Direction::Vertical){
+            if(row > biggest_row || num_of_chars > biggest_row){
+                biggest_row = row;
+                text = fill_vert(num_of_chars);
+            
+            }else{
+            // if(num_of_chars > biggest_row){
+            //     fill_row();
+            // }
             text = read_vertical(row, column, num_of_chars);
+        }
         }
         return text;
     }
@@ -170,7 +275,14 @@ using namespace ariel;
             biggest_row = row;
         }
 
+
         if(dir == Direction::Horizontal){
+
+        if(num_of_chars + column > max_size_of_col){
+                throw runtime_error(std::string("Failed: not valid, the str is too big"));//need to check if this throw okay
+                // throw("not valid, the str is too big");
+        }
+
             erase_horizontal(row, column, num_of_chars);
         
         }else if(dir == Direction::Vertical){
@@ -179,7 +291,7 @@ using namespace ariel;
     }
     //this function return string that Represents the page
     string Page::print_page(){//for me
-        string s = "";
+        string s;
         // cout<<"153"<<endl;
         for(int j=0; j<=biggest_row; j++){
             // cout<<"biggest row: "<<biggest_row<<endl;
@@ -196,6 +308,23 @@ using namespace ariel;
 
 // int main(){
 
+
+//     //  Notebook note;
+//      Page p;
+//     std::string s;
+//     for (int i=1; i<10000;i++){s+="a";}
+//      int k=0;
+//     for(;k<100;k++){
+//         // try{
+//             p.write(0,k,Direction::Vertical,s);
+//             // }
+//         // catch(std::exception&){
+//         //     CHECK_EQ(true,false);
+//         // }
+//     } 
+//     string str = p.print_page();
+//     cout<<str<<endl;
+
     // Page p = new Page();
     // cout<<"221"<<endl;
     // ariel::Page p = new ariel::Page();
@@ -205,7 +334,7 @@ using namespace ariel;
     // string s = ariel::write(0,0,ariel::Direction::Horizontal, "");
     // s += "pin";
     // cout<<"the string is: "<<p.print_page()<<endl;
-    // p.write(0,5, ariel::Direction::Horizontal, "itzik_");
+    // arielwrite(0,5, ariel::Direction::Horizontal, "itzik_");
     // p.write(1,6, ariel::Direction::Vertical, "itzik");
     // cout<<ariel::print_page()<<endl;
     // usleep(10000);
@@ -218,8 +347,7 @@ using namespace ariel;
     // cout<<"after erase"<<ariel::page[0][2]<<endl;
     // cout<<"after erase"<<ariel::page[0][3]<<endl;
     // cout<<"after erase"<<ariel::page[0][4]<<endl;
-    // string s = p.print_page();
-    // cout<<s<<endl;
+    // 
     // cout<<ariel::print_row(1)<<endl;
 //     return 0;
 // }

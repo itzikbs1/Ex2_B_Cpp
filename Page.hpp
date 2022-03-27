@@ -19,11 +19,14 @@ class Page{
 
     public:
     void fill_row(int row);
+    void fill_page(int big_row, int max);
+    string fill_vert(int len);
+    bool check_valid(string str);
     bool check_valid_horizontal(int row, int col, int len);
     bool check_valid_vertical(int row, int col, int len);
     void write_horizontal(int row, int column, string wr);
     void write_vertical(int row, int column, string wr);
-    void write(int row, int column, Direction dir, string wr);
+    void write(int row, int column, Direction dir, string const &wr);
     string read_horizontal(int row, int col, int len);
     string read_vertical(int row, int col, int len);
     string read(int row, int column, Direction dir, int num_of_chars);
