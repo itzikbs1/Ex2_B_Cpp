@@ -51,6 +51,7 @@ const int max_char = 126;
         
             if(page[row][col].empty()){
                 fill_row(row);
+                return true;
             }
 
             if(page[row][col+i] != "_"){
